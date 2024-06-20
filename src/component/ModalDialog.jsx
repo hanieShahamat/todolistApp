@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Todo } from "../App";
 import {
   Dialog,
@@ -6,28 +6,33 @@ import {
   Transition,
   TransitionChild,
 } from "@headlessui/react";
+import { listContext } from "../App";
 
 export default function ModalDialog({ todo }) {
+
   const [open, setOpen] = useState(true);
+
+  const {listtodo,setlisttodo} = useContext(listContext)
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const formData = new FormData(event.target);
     const title = formData?.get("inputTitle");
     const description = formData?.get("inputDescription");
     const date = formData?.get("inputTime");
-    let newTodoObject;
-    if (!!todo && todo?.id){
-      console.log("editmode", new Todo(todo.id,title, description, date));
+    if (!!todo && todo.id) {
+      const updatedList = listtodo.map((item) =>
+        item.id === todo.id ? new Todo(todo.id, title, description, date) : item
+      );
+      setlisttodo(updatedList);
+    } else {
+      const newTodo = new Todo(new Date().getTime(), title, description, date);
+      setlisttodo([...listtodo, newTodo]);
     }
-    else{
-      console.log("newmode", new Todo(new Date().getTime(),title, description, date))
-    }
-    console.log(title,description,date);
+    setOpen(false);
   };
 
-  const onDone = () => {
-    console.log(todo);
-  };
   return (
     <Transition show={open}>
       <Dialog className="relative z-10" onClose={setOpen}>
