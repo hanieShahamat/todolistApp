@@ -10,11 +10,11 @@ import DeleteItem from "./DeleteItem";
 
 export default function ListItem(props) {
   const { todo } = props; // شکستن یک آبجکت
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false                                                                                                                                                                                                                );
+  const onEditClose = ()=>{
+    setIsEditDialogOpen(false)
+  }
   const [isTrashClick, setisTrashClick] = useState(false);
-  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
-  const handleClick = () => {
-    console.log(props.todo);
-  };
   return (
     <>
       <li className="grid grid-cols-[1fr_24px] items-center gap-6 border-b-2 border-neutral-200 pb-4">
@@ -49,12 +49,12 @@ export default function ListItem(props) {
           <span className="text-zinc-500">{todo.description}</span>
           <span className="text-lime-600">
             <FontAwesomeIcon icon={faClock} />
-            {todo.date}
+            {todo.date.format("L")}
           </span>
         </div>
       </li>
-      {isTrashClick && <DeleteItem id={todo.id} />}
-      {isEditDialogOpen && <EditItem todo={todo} />}
+      {isTrashClick == true && <DeleteItem id={todo.id} />}
+      <EditItem todo={todo} open={isEditDialogOpen} onModalClose={onEditClose} />
     </>
   );
 }

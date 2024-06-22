@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { Todo } from "../App";
 import {
   Dialog,
@@ -7,10 +7,10 @@ import {
   TransitionChild,
 } from "@headlessui/react";
 import { listContext } from "../App";
+import moment from "moment";
 
-export default function ModalDialog({ todo }) {
-
-  const [open, setOpen] = useState(true);
+export default function ModalDialog(props) {
+  const {todo, open, onModalClose} = props
 
   const {listtodo,setlisttodo} = useContext(listContext)
 
@@ -23,19 +23,21 @@ export default function ModalDialog({ todo }) {
     const date = formData?.get("inputTime");
     if (!!todo && todo.id) {
       const updatedList = listtodo.map((item) =>
-        item.id === todo.id ? new Todo(todo.id, title, description, date) : item
+        item.id === todo.id ? new Todo(todo.id, title, description, new moment(date)) : item
       );
       setlisttodo(updatedList);
     } else {
-      const newTodo = new Todo(new Date().getTime(), title, description, date);
+      const newTodo = new Todo(new Date().getTime(), title, description, new moment(date));
       setlisttodo([...listtodo, newTodo]);
     }
-    setOpen(false);
+    onModalClose()
   };
 
   return (
     <Transition show={open}>
-      <Dialog className="relative z-10" onClose={setOpen}>
+      <Dialog className="relative z-10" 
+      onClose={onModalClose}
+      >
         <TransitionChild
           enter="ease-out duration-300"
           enterFrom="opacity-0"
@@ -107,7 +109,7 @@ export default function ModalDialog({ todo }) {
                           <button
                             type="button"
                             className="mt-3 inline-flex w-full justify-center rounded-md bg-white px-3 py-2 text-sm font-semibold text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 hover:bg-gray-50 sm:mt-0 sm:w-auto"
-                            onClick={() => setOpen(false)}
+                            onClick={onModalClose}
                             data-autofocus
                           >
                             Cancel
